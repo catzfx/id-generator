@@ -1,4 +1,4 @@
-import requests, argparse, random
+import requests, argparse, random, mrz
 from unidecode import unidecode
 
 # parser = argparse.ArgumentParser()
