@@ -7,9 +7,10 @@ list items *must* be of str type
     weight = [7, 3, 1]
     sum = 0
     for i in range(len(l)):
-        item = int(l[i]) if ord(l[i]) >= 48 and ord(l[i]) <= 57 else dictionary[l[i]]
-        if item == '<':
+        if l[i] == '<':
             item = 0
+        else:
+            item = int(l[i]) if ord(l[i]) >= 48 and ord(l[i]) <= 57 else dictionary[l[i]]
         sum += item * weight[i % 3]
     return sum % 10
 
