@@ -1,5 +1,6 @@
 import requests, argparse, random, mrz
 from unidecode import unidecode
+from faker import Faker
 
 # parser = argparse.ArgumentParser()
 
@@ -25,7 +26,8 @@ gender = data['url'][42] # 'm' or 'f'
 birthday = data['birth_data'].split('-')
 
 area = data['address'].split(', ')[-2].replace(' ', '-')
-area_code = str(judetList.index(area) + 1)
+area_code = judetList.index(area) + 1
+area_code = str(area_code + 10) if area_code > 40 else str(area_code)
 area_code = '0' * (2 - len(area_code)) + area_code
 
 nnn = str(random.randint(1, 999))
@@ -43,6 +45,8 @@ elif birthyear >= 1900:
     cnp[0] = 1 if gender == 'm' else 2
 else:
     cnp[0] = 3 if gender == 'm' else 4
+
+cnp[0] = str(cnp[0])
 
 cnp[1:3] = list(birthday[0][-2:]) # AA
 
@@ -65,6 +69,10 @@ c = 1 if c == 10 else c
 
 cnp[12] = str(c)
 
+# expiry date
+fake = Faker()
+expiry_date = fake.date_between('+1y', '+4y')
+
 # calculating bottom rows
 bottomrow = [['<'] * 36] * 2
 
@@ -86,3 +94,86 @@ print(name)
 print(bottomrow[0])
 
 # calculating bottom row 2
+series = {
+            '01': ['AX'], # ALba
+            '02': ['AR', 'ZR'], # Arad
+            '03': ['AS', 'AZ'], # Arges
+            '04': ['XC', 'ZC'], # Bacau
+            '05': ['XH', 'ZH'], # Bihor
+            '06': ['XB'], # Bistrita-Nasaud
+            '07': ['XT'], # Botosani
+            '08': ['BV', 'ZV'], # Brasov
+            '09': ['XR'], # Braila
+            '10': ['XZ'], # Buzau
+            '11': ['KS'], # Caras-Severin
+            '12': ['KX', 'CJ'], # Cluj
+            '13': ['KT', 'KZ'], # Constanta
+            '14': ['KV'], # Covasna
+            '15': ['DD', 'ZD'], # Dambovita
+            '16': ['DX', 'DZ'], # Dolj
+            '17': ['GL', 'ZL'], # Galati
+            '18': ['GZ'], # Gorj
+            '19': ['HR'], # Harghita
+            '20': ['HD', 'XD'], # Hunedoara
+            '21': ['SZ'], # Ialomita
+            '22': ['MX', 'MZ', 'IZ'], # Iasi
+            '23': ['IF'], # Ilfov
+            '24': ['MM', 'XM'], # Maramures
+            '25': ['MH'], # Mehedinti
+            '26': ['ZS', 'MS'], # Mures
+            '27': ['NT', 'NZ'], # Neamt
+            '28': ['OT'], # Olt
+            '29': ['PH', 'PX'], # Prahova
+            '30': ['SM'], # Satu Mare
+            '31': ['SX'], # Salaj
+            '32': ['SB'], # Sibiu
+            '33': ['SV', 'XV'], # Suceava
+            '34': ['TR'], # Teleorman
+            '35': ['TM', 'TZ'], # Timis
+            '36': ['TC'], # Tulcea
+            '37': ['VS', 'XS'], # Vaslui
+            '38': ['VX'], # Valcea
+            '39': ['VN'], # Vrancea
+            '40': ['DP', 'DR', 'DT', 'DX', 'RD', 'RR', 'RT', 'RX', 'RK', 'RZ'], # Bucuresti
+            '51': ['KL'], # Calarasi
+            '52': ['GG'], # Giurgiu
+          }
+
+bottomrow[1] = ['<'] * 36
+
+id_code = series[area_code][random.randint(0, len(series[area_code]) - 1)]
+
+id_num = [None] * 6
+
+for i in range(len(id_num)):
+    id_num[i] = str(random.randint(0, 9))
+
+id_series = list(id_code) + id_num
+
+bottomrow[1][:8] = id_series
+
+bottomrow[1][9] = str(mrz.checksum(id_series))
+
+bottomrow[1][10:13] = list('ROU')
+
+bottomrow[1][13:19] = cnp[1:7]
+
+bottomrow[1][19] = str(mrz.checksum(cnp[1:7]))
+
+bottomrow[1][20] = gender.upper()
+
+bottomrow[1][21:23] = str(expiry_date.year)[2:]
+
+bottomrow[1][23:25] = '0' * (2 - len(str(expiry_date.month))) + str(expiry_date.month)
+
+bottomrow[1][25:27] = '0' * (2 - len(str(expiry_date.day))) + str(expiry_date.day)
+
+bottomrow[1][27] = str(mrz.checksum(bottomrow[1][21:27]))
+
+bottomrow[1][28] = cnp[0] # just an educated guess, may not be correct
+
+bottomrow[1][29:35] = cnp[-6:]
+
+bottomrow[1][35] = str(mrz.checksum(bottomrow[1][0:10] + bottomrow[1][13:20] + bottomrow[1][21:35]))
+
+print(bottomrow[1])
