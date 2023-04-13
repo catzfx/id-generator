@@ -1,4 +1,5 @@
 import requests, argparse, random
+from unidecode import unidecode
 
 # parser = argparse.ArgumentParser()
 
@@ -15,6 +16,9 @@ judetList = open('judete.csv', 'r', encoding='utf-8').read().split(',')
 name = data['name'].split()
 if name[0][-1] == '.':
     name = name[1:]
+
+first_name = name[-2]
+last_name = name[-1]
 
 gender = data['url'][42] # 'm' or 'f'
 
@@ -61,6 +65,24 @@ c = 1 if c == 10 else c
 
 cnp[12] = str(c)
 
-print(cnp)
-for i in range(13):
-    print(cnp[i], end='')
+# calculating bottom rows
+bottomrow = [['<'] * 36] * 2
+
+# calculating bottom row 1
+bottomrow[0][:5] = list('IDROU')
+
+name_adapted = [name[-2].replace('-', '<').replace(' ', '<'), name[-1].replace('-', '<').replace(' ', '<')]
+first_name_a = unidecode(name_adapted[0])
+last_name_a = unidecode(name_adapted[1])
+
+bottomrow[0][5:(5 + len(last_name_a))] = last_name_a.upper()
+
+br1 = 7 + len(last_name_a)
+
+bottomrow[0][br1:(br1 + len(first_name_a))] = first_name_a.upper()
+
+print(name)
+
+print(bottomrow[0])
+
+# calculating bottom row 2
