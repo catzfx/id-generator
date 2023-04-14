@@ -1,4 +1,4 @@
-import requests, argparse, random, mrz
+import requests, argparse, random, mrz, img_gen, datetime
 from unidecode import unidecode
 from faker import Faker
 
@@ -26,9 +26,22 @@ gender = data['url'][42] # 'm' or 'f'
 birthday = data['birth_data'].split('-')
 
 area = data['address'].split(', ')[-2].replace(' ', '-')
+if area == 'Satu-Mare':
+    area == 'Satu Mare'
 area_code = judetList.index(area) + 1
 area_code = str(area_code + 10) if area_code > 40 else str(area_code)
 area_code = '0' * (2 - len(area_code)) + area_code
+
+locality = data['address'].split(', ')[-3].split(' ')
+print(locality)
+if locality[0][-1] == '.':
+    locality = locality[0] + ' '.join(locality[1:])
+else:
+    locality = 'Loc.' + ' '.join(locality)
+address = ' '.join(data['address'].split(', ')[0:-3]).replace('. ', '.')
+print(address)
+
+print(locality)
 
 nnn = str(random.randint(1, 999))
 nnn = '0' * (3 - len(nnn)) + nnn
@@ -69,9 +82,15 @@ c = 1 if c == 10 else c
 
 cnp[12] = str(c)
 
-# expiry date
+# start & expiry date
 fake = Faker()
-expiry_date = fake.date_between('+1y', '+4y')
+expiry_date = fake.date_between('+1y', '+7y')
+start_date = expiry_date
+
+expiry_date = datetime.date(expiry_date.year, int(birthday[1]), int(birthday[2]))
+start_date = datetime.date(start_date.year - 10, start_date.month, start_date.day)
+
+print(f'{start_date}-{expiry_date}')
 
 # calculating bottom rows
 bottomrow = [['<'] * 36] * 2
@@ -138,6 +157,50 @@ series = {
             '51': ['KL'], # Calarasi
             '52': ['GG'], # Giurgiu
           }
+area_ids = {
+            '01': 'AB', # ALba
+            '02': 'AR', # Arad
+            '03': 'AG', # Arges
+            '04': 'BC', # Bacau
+            '05': 'BH', # Bihor
+            '06': 'BN', # Bistrita-Nasaud
+            '07': 'BT', # Botosani
+            '08': 'BV', # Brasov
+            '09': 'BR', # Braila
+            '10': 'BZ', # Buzau
+            '11': 'CS', # Caras-Severin
+            '12': 'CJ', # Cluj
+            '13': 'CT', # Constanta
+            '14': 'CV', # Covasna
+            '15': 'DB', # Dambovita
+            '16': 'DJ', # Dolj
+            '17': 'GL', # Galati
+            '18': 'GJ', # Gorj
+            '19': 'HR', # Harghita
+            '20': 'HD', # Hunedoara
+            '21': 'IL', # Ialomita
+            '22': 'IS', # Iasi
+            '23': 'IF', # Ilfov
+            '24': 'MM', # Maramures
+            '25': 'MH', # Mehedinti
+            '26': 'MS', # Mures
+            '27': 'NT', # Neamt
+            '28': 'OT', # Olt
+            '29': 'PH', # Prahova
+            '30': 'SM', # Satu Mare
+            '31': 'SJ', # Salaj
+            '32': 'SB', # Sibiu
+            '33': 'SV', # Suceava
+            '34': 'TR', # Teleorman
+            '35': 'TM', # Timis
+            '36': 'TL', # Tulcea
+            '37': 'VS', # Vaslui
+            '38': 'VL', # Valcea
+            '39': 'VN', # Vrancea
+            '40': 'B', # Bucuresti
+            '51': 'CL', # Calarasi
+            '52': 'GR', # Giurgiu
+}
 
 bottomrow[1] = ['<'] * 36
 
@@ -177,3 +240,20 @@ bottomrow[1][29:35] = cnp[-6:]
 bottomrow[1][35] = str(mrz.checksum(bottomrow[1][0:10] + bottomrow[1][13:20] + bottomrow[1][21:35]))
 
 print(bottomrow[1])
+
+# create image
+img_gen.generate_id({
+    'surname': last_name,
+    'name': first_name,
+    'sex': gender.upper(),
+    'cnp': cnp,
+    'area_id': area_ids[area_code],
+    'locality': locality,
+    'address': address,
+    'emmitting_institution': area,
+    'emission_date': start_date,
+    'expiry_date': expiry_date,
+    'series': id_code,
+    'series_number': id_num,
+    'mrz': bottomrow,
+})
