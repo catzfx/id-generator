@@ -78,8 +78,8 @@ def generate_id(data: dict, template_path = 'template.png'):
 
     # draw cnp
     draw_text_psd_style(draw, (cnp_left, cnp_top), f'{data["cnp"][0]}', main_font, -150, fill='Red')
-    draw_text_psd_style(draw, (cnp_left + main_font.getlength('1') - 7, cnp_top), ''.join(data["cnp"][1:7]), main_font, -150, fill='Black')
-    draw_text_psd_style(draw, (cnp_left + main_font.getlength('123456') - 9, cnp_top), ''.join(data["cnp"][7:]), main_font, -150, fill='Red')
+    draw_text_psd_style(draw, (cnp_left + main_font.getlength('1') - 6, cnp_top), ''.join(data["cnp"][1:7]), main_font, -150, fill='Black')
+    draw_text_psd_style(draw, (cnp_left + main_font.getlength('123456') - 8, cnp_top), ''.join(data["cnp"][7:]), main_font, -150, fill='Red')
     
     # draw series
     draw_text_psd_style(draw, (series_left, series_top), data['series'], main_font, -150, fill='Black')
