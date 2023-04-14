@@ -89,10 +89,15 @@ def generate_id(data: dict, template_path = 'template.png'):
     draw_text_psd_style(draw, (1420, 490), data['sex'], main_font, -150, fill='Black')
 
     # draw expiry date
-    draw_text_psd_style(draw, (1170, 800), f'{data["emission_date"].day}.{data["emission_date"].month}.{str(data["emission_date"].year)[2:]}-{data["expiry_date"].day}.{data["expiry_date"].month}.{str(data["expiry_date"].year)[2:]}', main_font, -150, fill='Black')
+    draw_text_psd_style(draw, (1150, 800), f'{"0" * (2 - len(str(data["emission_date"].day))) + str(data["emission_date"].day)}.{"0" * (2 - len(str(data["emission_date"].month))) + str(data["emission_date"].month)}.{str(data["emission_date"].year)[2:]}-{"0" * (2 - len(str(data["expiry_date"].day))) + str(data["expiry_date"].day)}.{"0" * (2 - len(str(data["expiry_date"].month))) + str(data["expiry_date"].month)}.{str(data["expiry_date"].year)[2:]}', main_font, -150, fill='Black')
 
-    img.show()
-    img.save('result.png')
+    # draw person picture
+    picture = Image.open('picture.png').resize((430, 570)) # 620 x 720 resolution
+    img_final = img.copy()
+    img_final.paste(picture, (40, 150))
+
+    img_final.show()
+    img_final.save('result.png')
 
 
 if __name__ == '__main__':
