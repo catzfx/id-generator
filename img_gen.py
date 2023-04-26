@@ -41,7 +41,7 @@ def generate_id(data: dict, template_path = 'template.png'):
 
     img = Image.open(template_path)
     draw = ImageDraw.Draw(img)
-    bottom_font = ImageFont.truetype('OCR-B.ttf', 41)
+    bottom_font = ImageFont.truetype('OCRB REGULAR.ttf', 57)
     main_font = ImageFont.truetype('OCR-B.ttf', 34)
     br_left = 100
     mr_left = 480
